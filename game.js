@@ -5,8 +5,9 @@ var gamePattern = [];
 var buttonColours = ["red", "blue", "green", "yellow"];
 
 //Wenn Taste gedrückt wird, startet das Spiel
-$(document).keydown(function () {
-  if (!started) { // damit das Spiel nur einmal auf Keydown reagiert
+$(document).on("keydown touchstart",function () {
+  if (!started) {
+    // damit das Spiel nur einmal auf Keydown reagiert
     level = 0;
     gamePattern = [];
     userClickedPattern = [];
@@ -36,7 +37,8 @@ function nextSequence() {
 }
 
 // Function für Sound und Blinken, wenn Button geklick wird
-$(".btn").click(function () {
+$(".btn").on("click touchstart", function (event) {
+  event.preventDefault();
   var userChosenColour = $(this).attr("id"); // This um auf Attr, ID zugreifen
   userClickedPattern.push(userChosenColour); // Hier den Push vor Sound erstellen ansonsten funktioniert es nicht
   SimonClick(userChosenColour);
@@ -45,8 +47,6 @@ $(".btn").click(function () {
     .fadeIn(100);
   animatePressed(userChosenColour);
   checkAnswer(userClickedPattern.length - 1);
-
-  console.log(userClickedPattern);
 });
 
 function SimonClick(userChosenColour) {
