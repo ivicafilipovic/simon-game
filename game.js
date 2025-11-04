@@ -5,9 +5,12 @@ var gamePattern = [];
 var buttonColours = ["red", "blue", "green", "yellow"];
 
 //Wenn Taste gedrückt wird, startet das Spiel
-$(document).on("keydown touchstart",function () {
+$(document).on("keydown touchstart", function () {
   if (!started) {
-    // damit das Spiel nur einmal auf Keydown reagiert
+    var unlock = new Audio("./sounds/green.mp3");
+    unlock.volume = 0;
+    unlock.play().catch(() => {});
+    // damit das Spiel nur einmal auf Keydown oder Bildschirm Touch reagiert
     level = 0;
     gamePattern = [];
     userClickedPattern = [];
@@ -37,7 +40,8 @@ function nextSequence() {
 }
 
 // Function für Sound und Blinken, wenn Button geklick wird
-$(".btn").on("click touchstart", function (event) {
+$(".btn").on("pointerdown", function (event) {
+  //! Pointerdown um Doppelfeuernokay zu verhindern//
   event.preventDefault();
   var userChosenColour = $(this).attr("id"); // This um auf Attr, ID zugreifen
   userClickedPattern.push(userChosenColour); // Hier den Push vor Sound erstellen ansonsten funktioniert es nicht
@@ -80,6 +84,8 @@ function SimonClick(userChosenColour) {
       wrongSound.play(); // bei falschen Tastendrunck wird dieser Ton abgespielt
       break;
   }
+  var wrongSound = new Audio("./sounds/wrong.mp3");
+  wrongSound.play();
 }
 function animatePressed(currentColour) {
   $("#" + currentColour).addClass("pressed");
@@ -94,8 +100,6 @@ function animatePressed(currentColour) {
 //Wenn die Sequen eingegeben wird -> nächstes Level
 function checkAnswer(currentIndex) {
   if (gamePattern[currentIndex] === userClickedPattern[currentIndex]) {
-    console.log("Richtig bis hier!");
-
     // Wenn die ganze Sequenz eingegen wird -> nächstes Level
     if (userClickedPattern.length === gamePattern.length) {
       setTimeout(function () {
@@ -105,14 +109,17 @@ function checkAnswer(currentIndex) {
   } else {
     // Fehler  -
     // -> Gamer Over
-
+    console.log("Play wrong", performance.now());
     SimonClick("wrong");
+    wrongSound.addEventListener("play", () => {
+      console.log("Sound actually playing", performance.now());
+    });
     $("body").addClass("game-over");
     $("#level-title").text("Game Over, Press Any Key to Restart");
 
     setTimeout(function () {
       $("body").removeClass("game-over");
-    }, 200);
+    }, 400);
 
     //Hier aufrufen
     startOver();
