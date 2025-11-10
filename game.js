@@ -4,6 +4,7 @@ let started = false;
 let userClickedPattern = []; // Um später die Farben beim klicken zu pushen.
 let gamePattern = [];
 const buttonColours = ['red', 'blue', 'green', 'yellow'];
+let audioUnlocked = false;
 //**Globale Sound Vorladen */
 const sounds = {
   green: new Audio('./sounds/green.mp3'),
@@ -15,15 +16,19 @@ const sounds = {
 
 //! Alles lautlos abspielen um zu caching zu aktivieren
 function unLockAudio() {
+  if (audioUnlocked) return;
   Object.values(sounds).forEach((sound) => {
-    sound.volume = 0;
+    sound.muted = true; //! Started stumm
     sound.play().catch(() => {});
     sound.pause();
     sound.currentTime = 0;
+    sound.muted = false; //! Wieder hörbar
   });
+  audioUnlocked = true;
+  console.log('Audio unlocked');
 }
 //*Wenn Taste gedrückt wird, startet das Spiel
-$(document).on('keydown touchstart', function () {
+$(document).on('keydown touchstart pointerdown', function () {
   unLockAudio();
   // damit das Spiel nur einmal auf Keydown oder Bildschirm Touch reagiert
   if (!started) {
@@ -58,6 +63,7 @@ function nextSequence() {
 //*Function für Sound und Blinken, wenn Button geklickt wird
 $('.btn').on('pointerdown', function (event) {
   //! Pointerdown um Doppelfeuer zu verhindern//
+  unLockAudio();
   event.preventDefault();
   let userChosenColour = $(this).attr('id'); // This um auf Attr, ID zugreifen
   userClickedPattern.push(userChosenColour); // Hier den Push vor Sound erstellen ansonsten funktioniert es nicht
