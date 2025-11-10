@@ -5,6 +5,7 @@ let userClickedPattern = []; // Um später die Farben beim klicken zu pushen.
 let gamePattern = [];
 const buttonColours = ['red', 'blue', 'green', 'yellow'];
 let audioUnlocked = false;
+let audioCtx;
 //**Globale Sound Vorladen */
 const sounds = {
   green: new Audio('./sounds/green.mp3'),
@@ -16,16 +17,18 @@ const sounds = {
 
 //! Alles lautlos abspielen um zu caching zu aktivieren
 function unLockAudio() {
-  if (audioUnlocked) return;
-  Object.values(sounds).forEach((sound) => {
-    sound.muted = true; //! Started stumm
-    sound.play().catch(() => {});
-    sound.pause();
-    sound.currentTime = 0;
-    sound.muted = false; //! Wieder hörbar
-  });
-  audioUnlocked = true;
-  console.log('Audio unlocked');
+  try {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const buffer = audioCtx.createBuffer(1, 1, 220500);
+    const source = audioCtx.createBufferSource();
+    SourceBuffer = buffer;
+    source.connect(audioCtx.destination);
+    source.start(0);
+    audioUnlocked = true;
+    console.log('AudioContext unlocked');
+  } catch (e) {
+    console.warn('Audio unlock failed', e);
+  }
 }
 //*Wenn Taste gedrückt wird, startet das Spiel
 $(document).on('keydown touchstart pointerdown', function () {
