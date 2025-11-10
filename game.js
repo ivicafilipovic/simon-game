@@ -4,38 +4,14 @@ let started = false;
 let userClickedPattern = []; // Um später die Farben beim klicken zu pushen.
 let gamePattern = [];
 const buttonColours = ['red', 'blue', 'green', 'yellow'];
-let audioUnlocked = false;
-let audioCtx;
-//**Globale Sound Vorladen */
-const sounds = {
-  green: new Audio('./sounds/green.mp3'),
-  red: new Audio('./sounds/red.mp3'),
-  yellow: new Audio('./sounds/yellow.mp3'),
-  blue: new Audio('./sounds/blue.mp3'),
-  wrong: new Audio('./sounds/wrong.mp3'),
-};
 
-//* Keine Verzögerung beim Ton abspielen
-function unLockAudio() {
-  if (audioUnlocked) return; //! Falls audioUnlock in einer Function aufgerufen wird dann,
-  try {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)(); //! Erstellt Audio Engine im Browser, WEBKIT für ältere SafariBrowser al Fallback
-    const buffer = audioCtx.createBuffer(1, 1, 22050); //! nur einen Frame lang damit unhörbar
-    const source = audioCtx.createBufferSource(); //! Erstellt Audio-Quelle = eine Art Player
-    source.buffer = buffer; //! Verbindet Audio-Signal mit dem Player also Tonpuffer
-    source.connect(audioCtx.destination); //! Verbindet Audio-Ausgang mit den "Lautsprechern"
-    source.start(0);
-    audioUnlocked = true;
-    console.log('AudioContext unlocked');
-  } catch (e) {
-    console.warn('Audio unlock failed', e);
-  }
-}
 //*Wenn Taste gedrückt wird, startet das Spiel
-$(document).on('keydown touchstart pointerdown', function () {
-  unLockAudio();
-  // damit das Spiel nur einmal auf Keydown oder Bildschirm Touch reagiert
-  if (!started) {
+{
+function startGame() {
+  if (!started) return;
+    const unlock = new Audio('./sounds/green.mp3');
+    unlock.volume = 0;
+    unlock.play().then(() => unlock.pause());
     level = 0;
     gamePattern = [];
     userClickedPattern = [];
@@ -43,7 +19,10 @@ $(document).on('keydown touchstart pointerdown', function () {
     nextSequence();
     started = true; // true = spiel hat begonnen
   }
-});
+
+
+$(document).one('keydown touchstart pointerdown', startGame);
+
 
 function nextSequence() {
   userClickedPattern = [];
