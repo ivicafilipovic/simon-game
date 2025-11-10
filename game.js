@@ -15,15 +15,15 @@ const sounds = {
   wrong: new Audio('./sounds/wrong.mp3'),
 };
 
-//! Alles lautlos abspielen um zu caching zu aktivieren
+//* Keine Verzögerung beim Ton abspielen
 function unLockAudio() {
-  if (audioUnlocked) return;
+  if (audioUnlocked) return; //! Falls audioUnlock in einer Function aufgerufen wird dann,
   try {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const buffer = audioCtx.createBuffer(1, 1, 22050);
-    const source = audioCtx.createBufferSource();
-    source.buffer = buffer;
-    source.connect(audioCtx.destination);
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)(); //! Erstellt Audio Engine im Browser, WEBKIT für ältere SafariBrowser al Fallback
+    const buffer = audioCtx.createBuffer(1, 1, 22050); //! nur einen Frame lang damit unhörbar
+    const source = audioCtx.createBufferSource(); //! Erstellt Audio-Quelle = eine Art Player
+    source.buffer = buffer; //! Verbindet Audio-Signal mit dem Player also Tonpuffer
+    source.connect(audioCtx.destination); //! Verbindet Audio-Ausgang mit den "Lautsprechern"
     source.start(0);
     audioUnlocked = true;
     console.log('AudioContext unlocked');
