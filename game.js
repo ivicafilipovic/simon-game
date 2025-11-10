@@ -19,9 +19,9 @@ const sounds = {
 function unLockAudio() {
   try {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const buffer = audioCtx.createBuffer(1, 1, 220500);
+    const buffer = audioCtx.createBuffer(1, 1, 22050);
     const source = audioCtx.createBufferSource();
-    SourceBuffer = buffer;
+    source.buffer = buffer;
     source.connect(audioCtx.destination);
     source.start(0);
     audioUnlocked = true;
