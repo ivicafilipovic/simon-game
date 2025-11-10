@@ -17,6 +17,7 @@ const sounds = {
 
 //! Alles lautlos abspielen um zu caching zu aktivieren
 function unLockAudio() {
+  if (audioUnlocked) return;
   try {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const buffer = audioCtx.createBuffer(1, 1, 22050);
