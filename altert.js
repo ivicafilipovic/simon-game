@@ -12,13 +12,6 @@ console.log('Audio unlocked');
 let audioUnlocked = false;
 let audioCtx;
 //**Globale Sound Vorladen */
-const sounds = {
-  green: new Audio('./sounds/green.mp3'),
-  red: new Audio('./sounds/red.mp3'),
-  yellow: new Audio('./sounds/yellow.mp3'),
-  blue: new Audio('./sounds/blue.mp3'),
-  wrong: new Audio('./sounds/wrong.mp3'),
-};
 
 //* Keine Verzögerung beim Ton abspielen
 function unLockAudio() {

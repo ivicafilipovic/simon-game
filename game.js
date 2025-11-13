@@ -4,25 +4,35 @@ let started = false;
 let userClickedPattern = []; // Um später die Farben beim klicken zu pushen.
 let gamePattern = [];
 const buttonColours = ['red', 'blue', 'green', 'yellow'];
-
+const sounds = {
+  green: new Audio('./sounds/green.mp3'),
+  red: new Audio('./sounds/red.mp3'),
+  yellow: new Audio('./sounds/yellow.mp3'),
+  blue: new Audio('./sounds/blue.mp3'),
+  wrong: new Audio('./sounds/wrong.mp3'),
+};
 //*Wenn Taste gedrückt wird, startet das Spiel
-{
+
 function startGame() {
-  if (!started) return;
-    const unlock = new Audio('./sounds/green.mp3');
-    unlock.volume = 0;
-    unlock.play().then(() => unlock.pause());
-    level = 0;
-    gamePattern = [];
-    userClickedPattern = [];
-    $('#level-title').text('Level  ' + level);
-    nextSequence();
-    started = true; // true = spiel hat begonnen
-  }
+  if (started) return;
+  const unlock = new Audio('./sounds/green.mp3');
+  unlock.volume = 0;
+  unlock.play().then(() => unlock.pause());
+  level = 0;
+  gamePattern = [];
+  userClickedPattern = [];
+  $('#level-title').text('Level  ' + level);
+  nextSequence();
+  started = true; // true = spiel hat begonnen
+}
 
-
-$(document).one('keydown touchstart pointerdown', startGame);
-
+$(document).on('keydown pointerdown', startGame);
+$(document).on('touchstart', function () {
+  const unlock = new Audio('./sounds/green.mps3');
+  unlock.volume = 0;
+  unlock.play().then(() => unlock.pause());
+  startGame();
+});
 
 function nextSequence() {
   userClickedPattern = [];
@@ -46,7 +56,6 @@ function nextSequence() {
 //*Function für Sound und Blinken, wenn Button geklickt wird
 $('.btn').on('pointerdown', function (event) {
   //! Pointerdown um Doppelfeuer zu verhindern//
-  unLockAudio();
   event.preventDefault();
   let userChosenColour = $(this).attr('id'); // This um auf Attr, ID zugreifen
   userClickedPattern.push(userChosenColour); // Hier den Push vor Sound erstellen ansonsten funktioniert es nicht
@@ -100,6 +109,12 @@ function checkAnswer(currentIndex) {
     }, 400);
 
     startOver();
+    //! Game neu starten
+    setTimeout(() => {
+      $(document)
+        .off('keydown touchstart pointerdown')
+        .on('keydown touchstart pointerdown', startGame);
+    }, 1500);
   }
 }
 
@@ -110,12 +125,12 @@ function startOver() {
   started = false;
 }
 
-//! Damit während mobile Ansicht TAP TO START steht
+//*Damit während mobile Ansicht TAP TO START steht
 function updateStartText() {
-  const isMobile = window.matchMedia('(max-width: 850px)').matches;
+  const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  const isSmallScreen = window.matchMedia('(max-width: 850px)').matches;
   //!Wenn Touch vorhanden oder Bildschirm klein
-
-  if (isMobile) {
+  if (isMobile && isSmallScreen) {
     $('#level-title').text('Tap To Start');
   } else {
     $('#level-title').text('Press A Key to Start');
@@ -124,7 +139,5 @@ function updateStartText() {
 
 $(document).ready(function () {
   updateStartText(); //! Beim Laden prüfen
-  $(window).on('resize orientationchange', function () {
-    updateStartText();
-  });
+  $(window).on('resize orientationchange', updateStartText);
 });
